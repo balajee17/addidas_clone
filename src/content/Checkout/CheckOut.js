@@ -9,13 +9,19 @@ import BillingPage from "../../components/Checkout/billing";
 import CircularProgress from "@mui/material/CircularProgress";
 import { BsTruck } from "react-icons/bs";
 import { RiRotateLockLine } from "react-icons/ri";
+import axios from 'axios'
+import { useDispatch, useSelector } from "../../redux/store/store";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
+
 
 const CheckOutPage = () => {
   const [show, setShow] = useState(false);
   const [progress, setProgress] = useState(false);
   const [step, setStep] = useState(1);
+  const dispatch = useDispatch();
+
 
 
   const navigate = useNavigate();
@@ -50,6 +56,77 @@ const CheckOutPage = () => {
     }, 2000);
 
   };
+
+  const getPosition = async (latitude,longitude)=>{
+    await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.REACT_APP_GOOGLE_CLIENTID}`).then((res)=>{
+      console.log(res)
+      if(res?.data?.status==='OK'){
+        const locality = res.data?.results[0]?.address_components.filter((item)=>{ return item.types.includes('sublocality_level_1')})
+        const city = res.data?.results[0]?.address_components.filter((item)=> item.types.includes('locality'))
+        const state = res.data?.results[0]?.address_components.filter((item)=> item.types.includes('administrative_area_level_1'))
+        const country = res.data?.results[0]?.address_components.filter((item)=> item.types.includes('country'))
+        const pin = res.data?.results[0]?.address_components.filter((item)=> item.types.includes('postal_code'))
+
+              // values.city = city.length !==0? city[0].long_name:"";
+              // values.locality =  locality.length !==0 ? locality[0].long_name :"";
+              // values.state = state.length!==0 ? state[0].long_name:"";
+              // values.country = country.length!==0 ? country[0].long_name :"";
+              // values.zipcode = pin!==0 ? parseFloat(pin[0].long_name):"";
+              // setOpen(true);
+        }
+        else{
+          // enqueueSnackbar('Some Error Occured', {
+          //   variant: 'error',
+          //   anchorOrigin: {
+          //     vertical: 'top',
+          //     horizontal: 'center'
+          //   },
+          //   TransitionComponent: Zoom
+          //   });
+        }
+      }).catch((e)=>{
+        // console.log(e)
+        // enqueueSnackbar('Some Error Occured '+e, {
+        //   variant: 'error',
+        //   anchorOrigin: {
+        //     vertical: 'top',
+        //     horizontal: 'center'
+        //   },
+        //   TransitionComponent: Zoom
+        //   });
+      })
+    }
+
+   const handleCurrLocation = async ()=>{
+    setShow((value) => !value)
+    // if((user.currentLocation===null)||((user.currentLocation && user.currentLocation.latitude!=undefined) && (user.currentLocation && user.currentLocation.longitude!=undefined))){
+      if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition((position)=>{
+            const {latitude,longitude} = position.coords;
+            getPosition(latitude,longitude)
+          },(error)=>{
+            // dispatch(updateLocation({code:error.code,message:error.message}))
+            console.log(error)
+          })
+        }
+        else{
+          alert('Your Browser is not supporting geoLocation, Please Update your browser');
+        }
+  // }
+  // else if(user.currentLocation.latitude!=undefined&&user.currentLocation.longitude!=undefined){
+  //     getPosition(user.currentLocation.latitude,user.currentLocation.longitude)
+  // }
+  // else{
+  //     enqueueSnackbar(`${user.currentLocation.code}`==='1'?'User Blocked Loaction, Please unblocked and reload ':`${user.currentLocation.message}`, {
+  //         variant: 'error',
+  //         anchorOrigin: {
+  //           vertical: 'top',
+  //           horizontal: 'center'
+  //         },
+  //         TransitionComponent: Zoom
+  //         });
+  // }
+   }
 
   return (
     <>
@@ -149,7 +226,8 @@ const CheckOutPage = () => {
           <Checkbox
             {...label}
             checked={show}
-            onClick={() => setShow((value) => !value)}
+            onClick={handleCurrLocation}
+            
           />
           <p className="mt-2 ">
             My billing and delivery information are the same.

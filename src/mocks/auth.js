@@ -6,7 +6,7 @@ class AuthApi {
     const response = await axios.get(`${process.env.REACT_APP_HOST}/user/me`, {
       method: "get",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       
     });
@@ -96,7 +96,7 @@ class AuthApi {
     );
     if (response.data.status === "SUCCESS") {
       console.log("response.data",response.data.data.token)
-      localStorage.setItem("authToken",response.data.data.token)
+      localStorage.setItem("accessToken",response.data.data.token)
       return response.data;
     }
     else return false;

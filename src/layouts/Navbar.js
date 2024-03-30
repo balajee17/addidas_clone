@@ -17,11 +17,16 @@ import NavbarSlider2Page from "./NavbarSlider2Page";
 import MenPage from "../components/Navbar/men";
 import { Box } from "@mui/material";
 import NavbarSliderPage from "./NavbarSliderPage";
+import Cookies from "js-cookie";
+import axios from "axios";
+
 
 const Navbar = ({ name }) => {
   const [drawer1, setDrawer1] = useState(false);
   const [drawer2, setDrawer2] = useState(false);
   const [value1, setValue1] = React.useState([0, 20000]);
+  const [cartBadge, setCartBadge] = useState(0);
+
 
   const [show, setShow] = useState(false);
   const handleClick1 = () => {
@@ -42,19 +47,68 @@ const Navbar = ({ name }) => {
 
   const user = useSelector((state) => state.auth.user);
   // console.log("user", user);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const handleLogout = async () => {
     const res = await dispatch(logoutUser());
     if (res) {
-      localStorage.removeItem("authToken");
+      localStorage.removeItem("accessToken");
+      Cookies.remove("authCookie");
       alert("User Logout successfully");
       navigate("/login");
     }
   };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cartData = useSelector((state) => state?.cart?.cart);
+
+  const getCarts = async () => {
+    console.log(user)
+    let payload = {
+
+     query: { userId: user?.id, isDeleted: false },
+      options: {
+        collation: "",
+        sort: { name: 1 },
+        populate: "products.productId",
+        projection: "",
+        lean: false,
+        leanWithId: true,
+        page: 1,
+        limit: 10,
+        pagination: true,
+        useEstimatedCount: false,
+        useCustomCountFn: false,
+        forceCountFn: false,
+        read: {},
+        options: {},
+      },
+      isCountOnly: true,
+    };
+    
+    let result = await axios.post(
+      `${process.env.REACT_APP_HOST}/cart/list`,
+      payload,
+      {
+        method: "post",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+    if (result && result.data) {
+     setCartBadge(result?.data?.data?.totalRecords)
+    } else {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    if(user && user.id)
+      getCarts();
+  }, [user]);
+
   return (
-    <div className="fixed w-full  z-[999]">
+    <div className=" fixed top-0 w-full  z-[999]">
       <div className="flex justify-between p-2  font-bold  sm:cursor-pointer  sm:flex sm:justify-center sm:items-center sm:font-bold sm:gap-10 bg-[#ffffff] sm:border-b-2 sm:border-grey   ">
         <div
           onClick={() => setDrawer1(true)}
@@ -124,20 +178,39 @@ const Navbar = ({ name }) => {
 
               <Box className={"dropdown"} sx={{ display: "none" }}>
                 <div className="fixed  top-[110px] left-[0px] z-10 bg-secoundry w-full ">
-                  <div
-                    className="flex justify-between ml-6 mr-6 p-10 w-full "
-                  >
+                  <div className="flex justify-between ml-6 mr-6 p-10 w-full ">
                     <div>
-                      <h1   className="font-bold cursor-pointer hover:underline ">
+                      <h1 className="font-bold cursor-pointer hover:underline ">
                         FEATURED
                       </h1>
-                      <p onClick={() => navigate(`/product-page?key=featured&&value=New Arrivals`)} className="cursor-pointer hover:underline ">
+                      <p
+                        onClick={() =>
+                          navigate(
+                            `/product-page?key=featured&&value=New Arrivals`
+                          )
+                        }
+                        className="cursor-pointer hover:underline "
+                      >
                         New Arrivals
                       </p>
-                      <p onClick={() => navigate(`/product-page?key=featured&&value=Online Exclusives`)} className="cursor-pointer hover:underline ">
+                      <p
+                        onClick={() =>
+                          navigate(
+                            `/product-page?key=featured&&value=Online Exclusives`
+                          )
+                        }
+                        className="cursor-pointer hover:underline "
+                      >
                         Online Exclusives
                       </p>
-                      <p onClick={() => navigate(`/product-page?key=featured&&value=Addidas Sportswear`)}className="cursor-pointer hover:underline ">
+                      <p
+                        onClick={() =>
+                          navigate(
+                            `/product-page?key=featured&&value=Addidas Sportswear`
+                          )
+                        }
+                        className="cursor-pointer hover:underline "
+                      >
                         Addidas Sportswear
                       </p>
                     </div>
@@ -372,7 +445,7 @@ const Navbar = ({ name }) => {
           </Box>
 
           <Box
-             className="relative  w-[60px] h-[60px]"
+            className="relative  w-[60px] h-[60px]"
             sx={{ "&:hover .dropdown": { display: "flex" } }}
           >
             <p className="cursor-pointer hover:border-b-4  ">BRANDS</p>
@@ -430,7 +503,7 @@ const Navbar = ({ name }) => {
           </Box>
 
           <Box
-             className="relative  w-[60px] h-[60px]"
+            className="relative  w-[60px] h-[60px]"
             sx={{ "&:hover .dropdown": { display: "flex" } }}
           >
             <p className="cursor-pointer hover:border-b-4  ">LIFESTYLE</p>
@@ -488,7 +561,7 @@ const Navbar = ({ name }) => {
           </Box>
 
           <Box
-             className="relative  w-[60px] h-[60px]"
+            className="relative  w-[60px] h-[60px]"
             sx={{ "&:hover .dropdown": { display: "flex" } }}
           >
             <p className="cursor-pointer text-[red] hover:border-b-4  ">
@@ -597,7 +670,7 @@ const Navbar = ({ name }) => {
               />
             </Badge>
             <Badge
-              badgeContent={10}
+              badgeContent={cartBadge}
               color="secondary"
               onClick={handleClick2}
               className="cursor-pointer "

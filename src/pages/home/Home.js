@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import Homeheader from '../../content/Home/Herosection'
 import { useDispatch } from 'react-redux'
 import { getUser } from '../../redux/slices/auth'
+import Cookies from 'js-cookie';
+
 
 const Home = () => {
   const dispatch = useDispatch()
@@ -18,6 +20,10 @@ try {
 }
   }
   useEffect(()=>{
+    let token = Cookies.get('authCookie')
+    if(token!==undefined ){
+      localStorage.setItem("accessToken",token)
+    }
 fetchUser()
   },[])
   return (

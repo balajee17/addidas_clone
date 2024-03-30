@@ -17,6 +17,12 @@ import { register } from "../../../redux/slices/auth";
 import ResetPasswordPage from "../resetpassword/ResetPasswordPage";
 
 
+const handleGoogleLogin = () => {
+  window.open(`http://localhost:5000/auth/google`,"_self");
+
+
+}
+
 const initialValues = {
   username: "",
   password: "",
@@ -110,7 +116,7 @@ const LoginPage = () => {
           <div className="flex gap-x-2 mt-2  ">
             <ImAppleinc className="border-2 size-12 p-2 " />
             <FaFacebook className="border-2 size-12 p-2 " />
-            <FcGoogle className="border-2 size-12 p-2 " />
+            <FcGoogle onClick={ handleGoogleLogin} className="border-2 size-12 p-2 " />
           </div>
 
           <form onSubmit={handleSubmit} >

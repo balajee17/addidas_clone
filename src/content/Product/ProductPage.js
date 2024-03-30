@@ -17,10 +17,14 @@ import { ClassNames } from "@emotion/react";
 import { Pagination } from "@mui/material";
 
 const ProductPage = () => {
-  
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
   const [drawer, setDrawer] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(9);
   const location = useLocation();
 
   const dispatch = useDispatch();
@@ -47,37 +51,32 @@ const ProductPage = () => {
     if (checkBoxes) {
       val["colour"] = { $regex: checkBoxes, $options: "i" };
     }
-     if (gender) {
+    if (gender) {
       val["gender"] = { $regex: gender, $options: "i" };
     }
-     if ((value1 && value1[0] !== 0) || (value1 && value1[1] !== 20000)) {
-        val["price.mrp"] = { $gte: value1[0], $lte: value1[1] };
+    if ((value1 && value1[0] !== 0) || (value1 && value1[1] !== 20000)) {
+      val["price.mrp"] = { $gte: value1[0], $lte: value1[1] };
     }
-     if (productType) {
-        val["productType"] = { $regex: productType, $options: "i" };
+    if (productType) {
+      val["productType"] = { $regex: productType, $options: "i" };
     }
-     if (surface) {
-        val["surface"]= { $regex: surface, $options: "i" };
+    if (surface) {
+      val["surface"] = { $regex: surface, $options: "i" };
     }
-     if (feature) {
-     
-        val["feature"]= { $regex: feature, $options: "i" };
-     
+    if (feature) {
+      val["feature"] = { $regex: feature, $options: "i" };
     }
     if (sport) {
-      
-        val["sport"]= { $regex: sport, $options: "i" };
+      val["sport"] = { $regex: sport, $options: "i" };
     }
     if (size) {
-      
-        val["size"]= { $regex: size, $options: "i" };
+      val["size"] = { $regex: size, $options: "i" };
     }
-      
+
     if (sortBy) {
-      
-        val["sortBy"]= { $regex: sortBy, $options: "i" };
+      val["sortBy"] = { $regex: sortBy, $options: "i" };
     }
-      
+
     // if (searchParams) {
     //   console.log(searchParams);
     //   setFilter({
@@ -89,7 +88,6 @@ const ProductPage = () => {
       ...filter,
       ...val,
     });
-
   }, [
     value1,
     checkBoxes,
@@ -103,16 +101,25 @@ const ProductPage = () => {
   ]);
 
   useEffect(() => {
-    if(searchParams) {
+    if (searchParams) {
       let val = {};
-      searchParams.getAll("key").length>0 && searchParams.getAll("key").map((key,index) => {
-        if(searchParams.getAll("value").length>0 && searchParams.getAll("value")[index])
-          val[key] = { $regex: searchParams.getAll("value").length>0 && searchParams.getAll("value")[index], $options: "i" }
-      });
+      searchParams.getAll("key").length > 0 &&
+        searchParams.getAll("key").map((key, index) => {
+          if (
+            searchParams.getAll("value").length > 0 &&
+            searchParams.getAll("value")[index]
+          )
+            val[key] = {
+              $regex:
+                searchParams.getAll("value").length > 0 &&
+                searchParams.getAll("value")[index],
+              $options: "i",
+            };
+        });
       setFilter({
-        ...val
+        ...val,
       });
-      setValue1([0,20000]);
+      setValue1([0, 20000]);
       setCheckBoxes("");
       setGender(null);
       setProductType(null);
@@ -121,16 +128,12 @@ const ProductPage = () => {
       setSport(null);
       setSize(null);
       setSortBy(null);
-      
-
-
     }
-  },[searchParams])
+  }, [searchParams]);
 
   useEffect(() => {
-    let limit = 9;
-    dispatch(postProduct(page,limit, filter));
-  }, [filter,page]);
+    dispatch(postProduct(page, limit, filter));
+  }, [filter, page]);
 
   var settings = {
     dots: false,
@@ -167,8 +170,8 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="ml-40 mr-40 mt-36 ">
-      <div className="flex justify-between m-4   ">
+    <div className="ml-40 mr-40  ">
+      <div className="flex justify-between mt-40    ">
         <p className="font-bold italic ml-4 ">OUTDOOR SPORTSWEAR</p>
         <div className="border-2 p-2 flex gap-x-2   ">
           <button onClick={() => setDrawer(true)} className="">
@@ -208,8 +211,6 @@ const ProductPage = () => {
         </div>
       </div>
 
-      
-
       <div className=" cursor-pointer grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 px-2 sm:px-4">
         {product &&
           product.data &&
@@ -232,14 +233,21 @@ const ProductPage = () => {
               </div>
             </div>
           ))}
-
-          
       </div>
-      <Pagination
-  count={100}
-  page={page+1}
-  // onPageChange={handleChangePage}
-/>
+
+      <div className="w-full  my-6  flex justify-center    ">
+        <Pagination
+          className=""
+          count={
+            (product &&
+              product.data &&
+              product.data.paginator &&
+              product.data.paginator.itemCount) / limit
+          }
+          page={page}
+          onChange={handleChangePage}
+        />
+      </div>
     </div>
   );
 };

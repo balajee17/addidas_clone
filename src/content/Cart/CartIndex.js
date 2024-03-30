@@ -94,7 +94,7 @@ const CartIndex = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-y-4  ml-2 mr-2 overflow-x-hidden md:flex-row md:justify-between     ">
+      <div className="flex flex-col  gap-y-4  ml-2 mr-2 mt-20 overflow-x-hidden md:flex-row md:justify-between     ">
         <div className=" mt-4 ml-4   lg:mt-20 lg:ml-40   ">
           <div>
             <h1 className="font-bold text-3xl  ">YOUR BAG</h1>
