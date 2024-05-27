@@ -14,16 +14,13 @@ import SignupPage from "./pages/auth/signup/SignupPage";
 import { useState } from "react";
 import ResetPasswordOtpPage from "./pages/auth/resetpassword/ResetPasswordOtpPage";
 import ResetPasswordPage from "./pages/auth/resetpassword/ResetPasswordPage";
-import LogOutPage from "./pages/auth/logout/LogOutPage";
-import ValidateOtpPage from "./pages/auth/validateotp/ValidateOtpPage";
+
 import MePage from "./pages/accountdetail/me/MePage";
-import ProductSliderPage from "./content/Product/ProductSliderPage";
+
 import WishlistPage from "./pages/WishlistPage";
-import NavbarSliderPage from "./layouts/NavbarSliderPage";
+
 import NavbarProvider from "./utils/NavbarProvider";
-import NavbarSlider2Page from "./layouts/NavbarSlider2Page";
-import MenPage from "./components/Navbar/men";
-import WomenPage from "./components/Navbar/women";
+
 import CheckOutPage from "./content/Checkout/CheckOut";
 import BillingPage from "./components/Checkout/billing";
 import OrderPage from "./pages/orderandreturns/orderPage";
@@ -67,3 +64,8 @@ const App = () => {
 };
 
 export default App;
+
+
+// git add .
+// git commit -m "commit"
+// git push 

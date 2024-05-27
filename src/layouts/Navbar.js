@@ -20,13 +20,11 @@ import NavbarSliderPage from "./NavbarSliderPage";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-
 const Navbar = ({ name }) => {
   const [drawer1, setDrawer1] = useState(false);
   const [drawer2, setDrawer2] = useState(false);
   const [value1, setValue1] = React.useState([0, 20000]);
   const [cartBadge, setCartBadge] = useState(0);
-
 
   const [show, setShow] = useState(false);
   const handleClick1 = () => {
@@ -62,10 +60,9 @@ const Navbar = ({ name }) => {
   const cartData = useSelector((state) => state?.cart?.cart);
 
   const getCarts = async () => {
-    console.log(user)
+    console.log(user);
     let payload = {
-
-     query: { userId: user?.id, isDeleted: false },
+      query: { userId: user?.id, isDeleted: false },
       options: {
         collation: "",
         sort: { name: 1 },
@@ -84,7 +81,7 @@ const Navbar = ({ name }) => {
       },
       isCountOnly: true,
     };
-    
+
     let result = await axios.post(
       `${process.env.REACT_APP_HOST}/cart/list`,
       payload,
@@ -96,15 +93,14 @@ const Navbar = ({ name }) => {
       }
     );
     if (result && result.data) {
-     setCartBadge(result?.data?.data?.totalRecords)
+      setCartBadge(result?.data?.data?.totalRecords);
     } else {
       return false;
     }
   };
 
   useEffect(() => {
-    if(user && user.id)
-      getCarts();
+    if (user && user.id) getCarts();
   }, [user]);
 
   return (

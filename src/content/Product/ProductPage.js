@@ -253,3 +253,13 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
+
+
+// const data = {
+//   stident:"ashish",
+//   clad:"btech"}
+
+// const newData = {
+//   ...data, mother
+// }
